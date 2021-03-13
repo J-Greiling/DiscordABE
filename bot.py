@@ -34,6 +34,7 @@ async def template(ctx):
 
 @bot.command(name="guild", help="general guild overview")
 async def guildfun(ctx):
+    os.chdir("./text/")
     guild_embed = guild.get_embed()
     await ctx.send(embed=guild_embed)
 
