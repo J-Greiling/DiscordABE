@@ -1,7 +1,7 @@
 '''Init file for Functions
 '''
 
-__all__ = ["template_roll20", "dice", "guild"]
+__all__ = ["template_roll20", "dice", "guild", "guild_addon"]
 
 
 
