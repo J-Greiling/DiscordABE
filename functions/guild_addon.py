@@ -6,7 +6,7 @@ __date__ = "2021-03"
 import csv
 
 
-class Addon:
+class Addon():
     def __init__(self, level: int, name: str):
 
         filename = f"./text/{name}.csv"

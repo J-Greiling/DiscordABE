@@ -1,51 +1,71 @@
-'''Base Functionality for guild managment'''
+'''Cog for Guild Managment'''
 
 __author__ = "Jake Grey"
 __date__ = "2021-03"
 
 import discord
-import csv
+from discord.ext import commands
 from . import guild_addon
+from . import guild_base
 
 
-class Guild:
-    def __init__(self):
-        filename = "./text/guild_save.csv"
-        file_data = list(csv.reader(open(filename, "r"), delimiter=";"))
-        self.bedroom_level = file_data[0][0]
-        self.docks_level = file_data[0][1]
-        self.kitchen_level = file_data[0][2]
-        self.laboratory_level = file_data[0][3]
-        self.pen_level = file_data[0][4]
-        self.prison_level = file_data[0][5]
-        self.scriptorium_level = file_data[0][6]
-        self.smithy_level = file_data[0][7]
-        self.stable_level = file_data[0][8]
+class Guild(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+        self.guild = guild_base.GuildData()
 
-        self.addons = {"bedroom": guild_addon.Addon(self.bedroom_level, "bedroom"),
-                       "docks": guild_addon.Addon(self.docks_level, "docks"),
-                       "kitchen": guild_addon.Addon(self.kitchen_level, "kitchen"),
-                       "laboratory": guild_addon.Addon(self.laboratory_level, "laboratory"),
-                       "pen": guild_addon.Addon(self.pen_level, "pen"),
-                       "prison": guild_addon.Addon(self.prison_level, "prison"),
-                       "scriptorium": guild_addon.Addon(self.scriptorium_level, "scriptorium"),
-                       "smithy": guild_addon.Addon(self.smithy_level, "smithy"),
-                       "stable": guild_addon.Addon(self.stable_level, "stable")}
+    @commands.command(name="guild", help="Gives overview for guild")
+    async def print_guild(self, ctx):
+        """Prints embed for Guild"""
+        guild_embed = self.guild.get_embed()
+        await ctx.send(embed=guild_embed)
 
-    def get_embed(self):
-        filename = "./text/guild.csv"
-        guild_data = list(csv.reader(open(filename, "r"), delimiter=";"))
+    @commands.command(name="addon", help="Gives information about addon")
+    async def print_addon(self, ctx, addon_name):
+        """Prints embed for Addon"""
+        if addon_name in self.guild.addon_names:
+            addon_data = self.guild.addons[addon_name]
+            current_upgrade = guild_addon.Addon(
+                addon_data.level + 1, addon_name)
+            embed = discord.Embed(
+                title=addon_data.title,
+                description=addon_data.description
+            )
+            embed.add_field(
+                name="Next Upgrade",
+                value=current_upgrade.description
+            )
+            await ctx.send(embed=embed)
+        else:
+            pass
+
+    @commands.command(name="addonlist", help="Prints list of all available addons")
+    async def print_addonlist(self, ctx):
         embed = discord.Embed(
-            title=guild_data[0][0],
-            description=guild_data[0][1]
+            title="List of Addons"
         )
-        embed.set_thumbnail(url=guild_data[0][2])
-        for value in self.addons.values():
-            if(value.level):
-                embed.add_field(name=value.title,
-                                value=value.description,
-                                inline=False)
-        return embed
+        i = 0
+        for value in self.guild.addons.values():
+            embed.add_field(name=value.title,
+                            value=self.guild.addon_emotes[i],
+                            inline=False)
+            i += 1
+
+        message = await ctx.send(embed=embed)
+        for emote in self.guild.addon_emotes:
+            await message.add_reaction(emote)
+
+
+def setup(bot):
+    bot.add_cog(Guild(bot))
+
+
+
+
+
+
+
+
 
 
 
