@@ -41,7 +41,6 @@ class CustomCommands(commands.Cog):
         embed.set_footer(text="No takebacks for bad rolls")
 
         message = await ctx.send(embed=embed)
-        await message.add_reaction("\N{BED}")
 
 
 def setup(bot):

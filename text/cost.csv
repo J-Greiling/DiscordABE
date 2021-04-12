@@ -1,0 +1,8 @@
+addon_name;Bedrooms;Docks;Kitchen;Labratory lvl 1;Labratory lvl 2;Labratory lvl 3;Pen;Prison;Scriptorium lvl 1;Scriptorium lvl 2;Scriptorium lvl 3;Smithy Level 1;Smithy Level 2;Smithy Level 3;Stable
+food;;;300;;;;500;;;;;;;;500
+wood;250;500;500;250;;;400;;400;250;200;;;;500
+stone;;200;;;;;;400;;;;200;300;150;
+metal;;;50;10;40;60;;200;;;;200;300;150;
+glass;;;;25;100;125;;;10;50;80;;;;
+gems;;;;;2;5;;;;6;10;;1;5;
+gold;500;750;350;700;700;700;400;300;600;700;800;600;700;800;500

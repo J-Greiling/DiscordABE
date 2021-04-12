@@ -33,10 +33,11 @@ class GuildData():
                        "stable": guild_addon.Addon(self.stable_level, "stable")}
         self.addon_names = ["bedroom", "docks", "kitchen", "laboratory",
                             "pen", "prison", "scriptorium", "smithy", "stable"]
-        self.addon_emotes = ["\N{BED}", "\N{SHIP}", "\N{FORK AND KNIFE}", "\N{ALEMBIC}",
+        self.addon_emotes = ["\N{BED}", "\N{SAILBOAT}", "\N{FORK AND KNIFE}", "\N{ALEMBIC}",
                              "\N{CHICKEN}", "\N{LOCK}", "\N{SCROLL}", "\N{HAMMER}", "\N{HORSE}"]
 
     def get_embed(self):
+        """Embed fot the Guild listing all current upgrades"""
         filename = "./text/guild.csv"
         guild_data = list(csv.reader(open(filename, "r"), delimiter=";"))
         embed = discord.Embed(
@@ -50,6 +51,42 @@ class GuildData():
                                 value=value.description,
                                 inline=False)
         return embed
+
+    def get_addon_embed(self, addon_name):
+        """Embed of one addon showing the next upgrade if possible"""
+        addon_data = self.addons[addon_name]
+
+        embed = discord.Embed(
+            title=addon_data.title,
+            description=addon_data.description
+        )
+
+        if self.addons[addon_name].level < self.addons[addon_name].max_level:
+            current_upgrade = guild_addon.Addon(
+                addon_data.level + 1, addon_name)
+            embed.add_field(
+                name="Next Upgrade",
+                value=current_upgrade.description
+            )
+        return embed
+
+    def upgrade_addon(self, addon_name):
+        """Upgrade the addon by one level and saves levels"""
+
+        # Checks for valitiy are done before function call
+        self.addons[addon_name] = guild_addon.Addon(
+            self.addons[addon_name].level + 1, addon_name)
+
+        # save current level
+        filename = "./text/guild_save.csv"
+        writer = csv.writer(open(filename, "w"), delimiter=";")
+        writer.writerow(
+            [self.addons[addon].level for addon in self.addon_names])
+
+
+
+
+
 
 
 

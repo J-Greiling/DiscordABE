@@ -19,8 +19,9 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 bot = commands.Bot(command_prefix="+")
 
 # load COGS
-bot.load_extension("functions.custom_commands")
-bot.load_extension("functions.guild")
+bot.load_extension("custom.custom_commands")
+bot.load_extension("resource.resmanagement")
+bot.load_extension("guild.guild")
 
 
 # startup
