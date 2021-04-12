@@ -17,7 +17,6 @@ class ResManagement(commands.Cog):
         self.resource["emoji"] = [emote.encode().
                                   decode("unicode-escape")
                                   for emote in self.resource["emoji"]]
-
         self.res_msg = 0
 
     @commands.command(name="storage", help="Information on Money and Ressource Managment of the Guild")
