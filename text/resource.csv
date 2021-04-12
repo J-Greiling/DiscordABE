@@ -1,4 +1,8 @@
-resource_name,Food,Wood,Stone,Metal,Glass,Gems,Gold
-emoji,\N{CARROT},\N{EVERGREEN TREE},\N{BRICK},\N{GEAR},\N{LEFT-POINTING MAGNIFYING GLASS},\N{GEM STONE},\N{MONEY BAG}
-max,2000,1500,1250,750,250,0,0
-current,0,0,0,0,0,0,0
+resource_name;emoji;max;current
+Food;\N{CARROT};2000;0
+Wood;\N{EVERGREEN TREE};1500;0
+Stone;\N{BRICK};1250;0
+Metal;\N{GEAR};750;0
+Glass;\N{LEFT-POINTING MAGNIFYING GLASS};250;0
+Gems;\N{GEM STONE};0;0
+Gold;\N{MONEY BAG};0;0
