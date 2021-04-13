@@ -12,12 +12,20 @@ class GuildData():
     def __init__(self):
         filename = "./text/addons.csv"
         self.addons = pd.read_csv(
-            filename, delimiter=";", header=0, encoding="utf-8")
-        self.addons["emoji"] = [emote.encode().decode("unicode-escape")
-                                for emote in self.addons["emoji"]]
+            filename, delimiter=";", header=0, index_col=0, encoding="utf-8")
+
+        # only needed for intializing emoji
+        # self.addons["emoji"] = [emote.encode().decode("unicode-escape")
+        #                        for emote in self.addons["emoji"]]
 
     def get_embed(self):
-        """Embed fot the Guild listing all current upgrades"""
+        """Embed fot the Guild listing all current upgrades
+
+        Returns
+        -------
+            discord.Embed of guild information and current addons
+
+        """
         filename = "./text/guild.csv"
         guild_data = list(csv.reader(open(filename, "r"), delimiter=";"))
         embed = discord.Embed(
@@ -26,47 +34,105 @@ class GuildData():
         )
         embed.set_thumbnail(url=guild_data[0][2])
 
-        # TODO DO NOT ITERRATE DF
-        for i in range(len(self.addons)):
-            if self.addons["current_level"][i] > 0:
-                shift = self.addons["current_level"][i]
-                idx_name = self.addons.columns.get_loc("name_level_0")
-                idx_description = self.addons.columns.get_loc(
-                    "description_level_0")
-                embed.add_field(name=self.addons[self.addons.columns[idx_name + shift]][i],
-                                value=self.addons[self.addons.columns[idx_description + shift]][i], inline=False)
+        for addon in self.addons.index:
+            if self.addons["current_level"][addon] > 0:
+                level = self.addons["current_level"][addon]
+                embed.add_field(name=self.addons[self.get_shift_name(level)][addon],
+                                value=self.addons[self.get_shift_description(level)][addon], inline=False)
         return embed
 
-    def get_addon_embed(self, addon_name):
-        """Embed of one addon showing the next upgrade if possible"""
-        addon_data = self.addons[addon_name]
+    def get_shift_name(self, level):
+        """Function to find header index shifted by level name_level_0
+
+        Parameters
+        ----------
+            level
+                Current level of addon
+
+        Returns
+        -------
+            Header value shifted to compensate for level > 0
+        """
+
+        idx_name = self.addons.columns.get_loc("name_level_0")
+        return self.addons.columns[idx_name + level]
+
+    def get_shift_description(self, level):
+        """Function to find header shifted by level from description_level_0
+
+        Parameters
+        ----------
+            level
+                Current level of addon
+
+        Returns
+        -------
+            Header value shifted to compensate for level > 0
+        """
+
+        idx_description = self.addons.columns.get_loc(
+            "description_level_0")
+        return self.addons.columns[idx_description + level]
+
+    def addon_unlocked(self, addon_name):
+        """Check if Addon is unlocked
+
+        Parameters
+        ----------
+            addon_name:
+                Name of addon to be checked
+
+        Returns
+        -------
+            0/1 determined if by unlock stadium of addon
+        """
+
+        return self.addons["unlocked"][addon_name]
+
+    def get_addon_embed(self, addon_name, level, max_level):
+        """Embed of one addon showing the next upgrade if possible
+
+        Parameters
+        ----------
+            addon_name
+                Name of Addon to be checked
+            level
+                Current Level of addon
+            max_level
+                Maximum level of current addon
+
+        Returns
+        -------
+            discord.Embed of current addon status and description of next update
+
+        """
 
         embed = discord.Embed(
-            title=addon_data.title,
-            description=addon_data.description
+            title=self.addons[self.get_shift_name(level)][addon_name],
+            description=self.addons[self.get_shift_description(
+                level)][addon_name]
         )
 
-        if self.addons[addon_name].level < self.addons[addon_name].max_level:
-            current_upgrade = guild_addon.Addon(
-                addon_data.level + 1, addon_name)
+        if level < max_level:
             embed.add_field(
                 name="Next Upgrade",
-                value=current_upgrade.description
+                value=self.addons[self.get_shift_description(
+                    level + 1)][addon_name]
             )
+
         return embed
 
-    def upgrade_addon(self, addon_name):
-        """Upgrade the addon by one level and saves levels"""
+    def upgrade_addon(self, addon_name, level):
+        """Upgrade the addon by one level and saves Dataframe"""
 
         # Checks for valitiy are done before function call
-        self.addons[addon_name] = guild_addon.Addon(
-            self.addons[addon_name].level + 1, addon_name)
+
+        self.addons.at[addon_name, "current_level"] = level + 1
 
         # save current level
-        filename = "./text/guild_save.csv"
-        writer = csv.writer(open(filename, "w"), delimiter=";")
-        writer.writerow(
-            [self.addons[addon].level for addon in self.addon_names])
+        filename = "./text/addons.csv"
+        self.addons.to_csv(path_or_buf=filename, sep=";")
+
 
 
 
