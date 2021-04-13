@@ -13,7 +13,7 @@ class ResManagement(commands.Cog):
         self.bot = bot
         filename = "./text/resource.csv"
         self.resource = pd.read_csv(
-            filename, delimiter=";", header=0, encoding="utf-8")
+            filename, delimiter=";", header=0, index_col=0, encoding="utf-8")
         self.resource["emoji"] = [emote.encode().
                                   decode("unicode-escape")
                                   for emote in self.resource["emoji"]]
@@ -22,15 +22,15 @@ class ResManagement(commands.Cog):
     @commands.command(name="storage", help="Information on Money and Ressource Managment of the Guild")
     async def print_storage(self, ctx):
         embed = discord.Embed(title="Storage")
-        for i in range(len(self.resource)):
-            if self.resource['max'][i] == 0:
+        for resource in self.resource.index:
+            if self.resource['max'][resource] == 0:
                 embed.add_field(
-                    name=f"{self.resource['resource_name'][i]}-{self.resource['emoji'][i]}",
-                    value=f"{self.resource['current'][i]}")
+                    name=f"{self.resource['resource_name'][resource]}-{self.resource['emoji'][resource]}",
+                    value=f"{self.resource['current'][resource]}")
             else:
                 embed.add_field(
-                    name=f"{self.resource['resource_name'][i]}-{self.resource['emoji'][i]}",
-                    value=f"{self.resource['current'][i]} / {self.resource['max'][i]}")
+                    name=f"{self.resource['resource_name'][resource]}-{self.resource['emoji'][resource]}",
+                    value=f"{self.resource['current'][resource]} / {self.resource['max'][resource]}")
 
         msg = await ctx.send(embed=embed)
         self.res_msg = msg
