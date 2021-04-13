@@ -1,8 +1,8 @@
-resource_name;emoji;max;current
-Food;\N{CARROT};2000;0
-Wood;\N{EVERGREEN TREE};1500;0
-Stone;\N{BRICK};1250;0
-Metal;\N{GEAR};750;0
-Glass;\N{LEFT-POINTING MAGNIFYING GLASS};250;0
-Gems;\N{GEM STONE};0;0
-Gold;\N{MONEY BAG};0;0
+resource_idx;resource_name;emoji;max;current
+food;Food;\N{CARROT};2000;0
+wood;Wood;\N{EVERGREEN TREE};1500;0
+stone;Stone;\N{BRICK};1250;0
+metal;Metal;\N{GEAR};750;0
+glass;Glass;\N{LEFT-POINTING MAGNIFYING GLASS};250;0
+gems;Gems;\N{GEM STONE};0;0
+gold;Gold;\N{MONEY BAG};0;0
