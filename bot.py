@@ -23,8 +23,9 @@ bot.load_extension("custom.custom_commands")
 bot.load_extension("resource.resmanagement")
 bot.load_extension("guild.guild")
 
-
 # startup
+
+
 @bot.event
 async def on_ready():
     guild = discord.utils.get(bot.guilds)
