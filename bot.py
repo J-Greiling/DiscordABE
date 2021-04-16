@@ -1,7 +1,7 @@
 """ Main File for DiscordABE  """
 
 __author__ = "Jake Grey"
-__date__ = "2021-03"
+__date__ = "2021-04"
 
 # import
 import os
@@ -11,7 +11,6 @@ from discord.ext import commands
 from dotenv import load_dotenv
 
 # load token
-
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 
@@ -23,9 +22,8 @@ bot.load_extension("custom.custom_commands")
 bot.load_extension("resource.resmanagement")
 bot.load_extension("guild.guild")
 
+
 # startup
-
-
 @bot.event
 async def on_ready():
     guild = discord.utils.get(bot.guilds)

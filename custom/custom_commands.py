@@ -1,8 +1,9 @@
-'''Function for roll20 dice roll template generation'''
+"""Function for roll20 dice roll template generation"""
 
-__author__ = "Jake Grey"
+__author__ = "Jakob Greiling"
 __date__ = "2021-03"
 
+# import
 import numpy as np
 import discord
 from discord.ext import commands
@@ -15,8 +16,8 @@ class CustomCommands(commands.Cog):
 
     @commands.command(name="template", help="Stat role syntax for Roll20")
     async def template(self, ctx):
-        '''Prints Roll20 Roll template
-        Rolls Template and drops lowest to common requirement'''
+        """Prints Roll20 Roll template
+        Rolls Template and drops lowest to common requirement"""
 
         dice_rolls = np.ones(7, dtype=int)
         for i in range(len(dice_rolls)):
@@ -40,13 +41,9 @@ class CustomCommands(commands.Cog):
         )
         embed.set_footer(text="No takebacks for bad rolls")
 
-        message = await ctx.send(embed=embed)
+        await ctx.send(embed=embed)
 
 
 def setup(bot):
+    """"Setup for Bot COG Initialization"""
     bot.add_cog(CustomCommands(bot))
-
-
-
-
-
