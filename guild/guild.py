@@ -134,6 +134,7 @@ class Guild(commands.Cog):
             await ctx.send("Invalid Addon name")
 
     @commands.command(name="unlock", help="Function to unlock new addons (DM-only)")
+    @commands.has_any_role(DM_ROLE, BOT_ROLE)
     async def unlock_addon(self, ctx, addon_name):
         """Unlocks unavailable addons for the players to purchase
 
@@ -152,6 +153,19 @@ class Guild(commands.Cog):
         except Exception as e:
             print(f"Invalid input in {self.unlock_addon.name}: {e}")
             await ctx.send("Invalid Addon name")
+
+    @commands.command(name="update", help="Pass a month, processing guild activities (DM-Only)")
+    @commands.has_any_role(DM_ROLE, BOT_ROLE)
+    async def update_guild(self, ctx):
+        """Passes a month deducting money and processing goods
+        For now just money deduction is implemented
+        """
+        upkeep = 0
+        for addon in self.guild.addons.index:
+            upkeep += self.guild.addons["current_level"][addon] * 5
+        await ctx.send(f"Current Upkeep: {upkeep} Gold")
+        await self.res_management.add_money(ctx, -upkeep)
+
 
     @commands.Cog.listener()
     async def on_reaction_add(self, react, react_user):

@@ -13,7 +13,6 @@ USER_ROLE = "Tyria"
 DM_ROLE = "Regular DM"
 BOT_ROLE = "A.B.E"
 
-
 class ResManagement(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
