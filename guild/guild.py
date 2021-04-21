@@ -162,7 +162,7 @@ class Guild(commands.Cog):
         """
         upkeep = 0
         for addon in self.guild.addons.index:
-            upkeep += self.guild.addons["current_level"][addon] * 5
+            upkeep += self.guild.addons["current_level"][addon] * 20
         await ctx.send(f"Current Upkeep: {upkeep} Gold")
         await self.res_management.add_money(ctx, -upkeep)
 
