@@ -18,7 +18,7 @@ class GuildData:
         self.costs = pd.read_csv(
             filename, delimiter=";", header=0, index_col=0, encoding="utf-8")
 
-    def get_embed(self):
+    def get_embed(self) -> discord.Embed:
         """Embed fot the Guild listing all current upgrades
 
         Returns
@@ -42,7 +42,7 @@ class GuildData:
                     inline=False)
         return embed
 
-    def get_shift_name(self, level):
+    def get_shift_name(self, level: int) -> str:
         """Function to find header index shifted by level name_level_0
 
         Parameters
@@ -57,7 +57,7 @@ class GuildData:
         idx_name = self.addons.columns.get_loc("name_level_0")
         return self.addons.columns[idx_name + level]
 
-    def get_shift_description(self, level):
+    def get_shift_description(self, level: int) -> str:
         """Function to find header shifted by level from description_level_0
 
         Parameters
@@ -72,7 +72,7 @@ class GuildData:
         idx_description = self.addons.columns.get_loc("description_level_0")
         return self.addons.columns[idx_description + level]
 
-    def addon_unlocked(self, addon_name):
+    def addon_unlocked(self, addon_name: str) -> int:
         """Check if Addon is unlocked
 
         Parameters
@@ -86,7 +86,7 @@ class GuildData:
 
         return self.addons["unlocked"][addon_name]
 
-    def get_addon_embed(self, addon_name, level, max_level):
+    def get_addon_embed(self, addon_name: str, level: int, max_level: int) -> discord.Embed:
         """Embed of one addon showing the next upgrade if possible
 
         Parameters

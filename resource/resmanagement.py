@@ -43,7 +43,7 @@ class ResManagement(commands.Cog):
 
     @commands.command(name="buy_res", help="Buy Resource to the guild (Syntax add <amount> <resource>)")
     @commands.has_any_role(USER_ROLE, BOT_ROLE)
-    async def buy_res(self, ctx, amount, res):
+    async def buy_res(self, ctx, amount: str, res: str):
         """Function to buy Resources for predefined prices
 
         Parameters
@@ -70,7 +70,7 @@ class ResManagement(commands.Cog):
 
     @commands.command(name="sell_res", help="Sell Resource from the guild (Syntax sell <amount> <resource>)")
     @commands.has_any_role(USER_ROLE, BOT_ROLE)
-    async def sell_res(self, ctx, amount, res):
+    async def sell_res(self, ctx, amount: str, res: str):
         """Alias for Function buy res with a negative Value
         Converts positive Value to negative and calls self.buy_res
 
@@ -83,7 +83,7 @@ class ResManagement(commands.Cog):
 
     @commands.command(name="add_money", help="Adds Money to the Guild (DM only)")
     @commands.has_any_role(DM_ROLE, BOT_ROLE)
-    async def add_money(self, ctx, amount):
+    async def add_money(self, ctx, amount: str):
         """"DM Function to add money to the Guild, no perquisites need to be met to add
 
         Parameters
@@ -98,7 +98,7 @@ class ResManagement(commands.Cog):
 
     @commands.command(name="add_res", help="Add Resource to the guild (DM only)")
     @commands.has_any_role(DM_ROLE, BOT_ROLE)
-    async def add_res(self, ctx, amount, res):
+    async def add_res(self, ctx, amount: str, res: str):
         try:
             current_res = self.resource["current"][res.lower()]
             max_res = self.resource["max"][res.lower()]
@@ -127,7 +127,7 @@ class ResManagement(commands.Cog):
             print(f"Invalid input in {self.add_res.name}: {e}")
             await ctx.send("Invalid Input")
 
-    async def buy_res_direct(self, ctx, res):
+    async def buy_res_direct(self, ctx, res: str):
         """Interactive Input based on reaction, asks user the amount of selected resource to be modified
 
         Parameters

@@ -42,7 +42,7 @@ class Guild(commands.Cog):
 
     @commands.command(name="addon", help="Gives information about addon")
     @commands.has_any_role(USER_ROLE, BOT_ROLE)
-    async def print_addon(self, ctx, addon_name):
+    async def print_addon(self, ctx, addon_name: str):
         """Prints embed for Addon
 
         Parameters
@@ -94,7 +94,7 @@ class Guild(commands.Cog):
 
     @commands.command(name="upgrade", help="Upgrade an addon by one level")
     @commands.has_any_role(USER_ROLE, BOT_ROLE)
-    async def upgrade_addon(self, ctx, addon_name):
+    async def upgrade_addon(self, ctx, addon_name: str):
         """Upgrade addon to next level
 
         Parameters
@@ -135,7 +135,7 @@ class Guild(commands.Cog):
 
     @commands.command(name="unlock", help="Function to unlock new addons (DM-only)")
     @commands.has_any_role(DM_ROLE, BOT_ROLE)
-    async def unlock_addon(self, ctx, addon_name):
+    async def unlock_addon(self, ctx, addon_name: str):
         """Unlocks unavailable addons for the players to purchase
 
         Parameters

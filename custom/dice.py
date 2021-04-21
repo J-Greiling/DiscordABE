@@ -8,7 +8,7 @@ import random
 import numpy as np
 
 
-def roll_dice(n: int, x: int):
+def roll_dice(n: int, x: int) -> np.ndarray:
     """Rolls n, x sided dice
 
     Parameters:
@@ -28,7 +28,7 @@ def roll_dice(n: int, x: int):
     return roll
 
 
-def roll_keep(n: int, x: int, y: int):
+def roll_keep(n: int, x: int, y: int) -> np.ndarray:
     """ Rolls multiple dice and keeps a defined amount
 
     Parameters:
