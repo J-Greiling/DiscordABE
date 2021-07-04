@@ -20,6 +20,7 @@ class Guild(commands.Cog):
         self.guild = guild_base.GuildData()
         self.res_management = bot.get_cog("ResManagement")
         self.message = None
+        self.addon_list_message = None
         self.addon_message = None
         self.confirmation_message = None
         self.current_addon = None
@@ -28,6 +29,8 @@ class Guild(commands.Cog):
     @commands.has_any_role(USER_ROLE, BOT_ROLE)
     async def print_guild(self, ctx):
         """Prints embed for Guild"""
+        if ctx.message.author != self.bot.user:
+            await ctx.message.delete()
 
         guild_embed = self.guild.get_embed()
         msg = await ctx.send(embed=guild_embed)
@@ -49,6 +52,9 @@ class Guild(commands.Cog):
         ----------
         addon_name - Name of addon to be unlocked
         """
+        if ctx.message.author != self.bot.user:
+            await ctx.message.delete()
+
         try:
             addon_name = addon_name.lower()
             if self.guild.addon_unlocked(addon_name):
@@ -60,6 +66,7 @@ class Guild(commands.Cog):
                 if addon_level < addon_max_level:
                     await msg.add_reaction("\N{UPWARDS BLACK ARROW}")
                     self.current_addon = addon_name
+                await msg.add_reaction("\N{CROSS MARK}")
 
             else:
                 await ctx.send("Stop Meta gaming")
@@ -72,6 +79,9 @@ class Guild(commands.Cog):
     @commands.has_any_role(USER_ROLE, BOT_ROLE)
     async def print_addonlist(self, ctx):
         """Prints embed of all addons"""
+        if ctx.message.author != self.bot.user:
+            await ctx.message.delete()
+
         embed = discord.Embed(
             title="List of Addons"
         )
@@ -86,11 +96,12 @@ class Guild(commands.Cog):
                     inline=False)
 
         msg = await ctx.send(embed=embed)
-        self.message = msg
+        self.addon_list_message = msg
 
         for addon in self.guild.addons.index:
             if self.guild.addon_unlocked(addon):
                 await msg.add_reaction(self.guild.addons['emoji'][addon])
+        await msg.add_reaction("\N{CROSS MARK}")
 
     @commands.command(name="upgrade", help="Upgrade an addon by one level")
     @commands.has_any_role(USER_ROLE, BOT_ROLE)
@@ -101,6 +112,8 @@ class Guild(commands.Cog):
         ---------
         addon_name - Name of addon to be upgraded
         """
+        if ctx.message.author != self.bot.user:
+            await ctx.message.delete()
         try:
             addon_name = addon_name.lower()
             addon_level = self.guild.addons["current_level"][addon_name]
@@ -132,6 +145,7 @@ class Guild(commands.Cog):
         except Exception as e:
             print(f"Invalid input in {self.upgrade_addon.name}: {e}")
             await ctx.send("Invalid Addon name")
+        await ctx.message.delete()
 
     @commands.command(name="unlock", help="Function to unlock new addons (DM-only)")
     @commands.has_any_role(DM_ROLE, BOT_ROLE)
@@ -142,6 +156,8 @@ class Guild(commands.Cog):
         ----------
         addon_name - Name of Addon to be unlocked
         """
+        if ctx.message.author != self.bot.user:
+            await ctx.message.delete()
 
         try:
             if addon_name in self.guild.addons.index:
@@ -153,6 +169,7 @@ class Guild(commands.Cog):
         except Exception as e:
             print(f"Invalid input in {self.unlock_addon.name}: {e}")
             await ctx.send("Invalid Addon name")
+        await ctx.message.delete()
 
     @commands.command(name="update", help="Pass a month, processing guild activities (DM-Only)")
     @commands.has_any_role(DM_ROLE, BOT_ROLE)
@@ -160,6 +177,8 @@ class Guild(commands.Cog):
         """Passes a month deducting money and processing goods
         For now just money deduction is implemented
         """
+        if ctx.message.author != self.bot.user:
+            await ctx.message.delete()
         # Laboratory
         addon_name = "laboratory"
         res_value = [0, 13, 16, 19]
@@ -176,12 +195,12 @@ class Guild(commands.Cog):
         res = "wood"
         await self.money_gen_production(ctx, addon_name, res_value, res)
 
-
         upkeep = 0
         for addon in self.guild.addons.index:
             upkeep += int(self.guild.addons["current_level"][addon]) * 20
         await ctx.send(f"Current Upkeep: {upkeep} Gold")
         await self.res_management.add_money(ctx, -upkeep)
+
 
     async def money_gen_production(self,ctx, addon_name: str, res_value: [int], res: str):
         """Handling of Product/Money generating buildings"""
@@ -192,8 +211,7 @@ class Guild(commands.Cog):
                 await self.res_management.add_money(ctx, generated_income)
                 await ctx.send(f"{addon_name} used {amount} {res} to create products worth {generated_income} gold")
 
-
-    @commands.Cog.listener()
+    @commands.Cog.listener("on_reaction_add")
     async def on_reaction_add(self, react, react_user):
         """Listener Function to handle Reactions"""
 
@@ -206,29 +224,47 @@ class Guild(commands.Cog):
                 if react.message.id == self.message.id:
                     for addon in self.guild.addons.index:
                         if react.count > 1 and react.emoji == self.guild.addons["emoji"][addon]:
+                            await react.message.remove_reaction(react.emoji, react_user)
                             await self.print_addon(ctx, addon)
 
                     if react.count > 1 and react.emoji == "\N{UPWARDS BLACK ARROW}":
+                        await react.message.remove_reaction(react.emoji, react_user)
                         await self.print_addonlist(ctx)
 
                     if react.count > 1 and react.emoji == "\N{MONEY BAG}":
+                        await react.message.remove_reaction(react.emoji, react_user)
                         await self.res_management.print_storage(ctx)
+
+            if self.addon_list_message:
+                if react.message.id == self.addon_list_message.id:
+                    for addon in self.guild.addons.index:
+                        if react.count > 1 and react.emoji == self.guild.addons["emoji"][addon]:
+                            await react.message.remove_reaction(react.emoji, react_user)
+                            await self.print_addon(ctx, addon)
+                            await react.message.delete()
 
             if self.addon_message:
                 if react.message.id == self.addon_message.id:
                     if react.emoji == "\N{UPWARDS BLACK ARROW}" and react.count > 1:
                         msg = await ctx.send("Do you really want to Upgrade?")
+                        await react.message.remove_reaction(react.emoji, react_user)
                         self.confirmation_message = msg
                         await msg.add_reaction("\N{WHITE HEAVY CHECK MARK}")
                         await msg.add_reaction("\N{CROSS MARK}")
+                        await react.message.delete()
 
             if self.confirmation_message:
                 if react.message.id == self.confirmation_message.id:
-                    if react.emoji == "\N{WHITE HEAVY CHECK MARK}" and react.count > 1:
+                    if react.emoji == "\N{WHITE HEAVY CHECK MARK}" and react.count > 3:
+                        await react.message.remove_reaction(react.emoji, react_user)
+                        await react.message.delete()
                         await self.upgrade_addon(ctx, self.current_addon)
 
-                    if react.emoji == "\N{CROSS MARK}" and react.count > 1:
-                        self.confirmation_message = None
+            if react.message.author == self.bot.user:
+                if react.emoji == "\N{CROSS MARK}" and react.count > 1:
+                    await react.message.remove_reaction(react.emoji, react_user)
+                    await react.message.delete()
+                    self.confirmation_message = None
 
 
 def setup(bot):
