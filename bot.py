@@ -15,7 +15,8 @@ load_dotenv()
 TOKEN = os.getenv("TEST_TOKEN")
 
 # setup bot
-bot = commands.Bot(command_prefix="+")
+bot = commands.Bot(command_prefix="-")
+
 
 # load COGS
 bot.load_extension("custom.custom_commands")
