@@ -164,7 +164,7 @@ class ResManagement(commands.Cog):
             self.resource.at[res, "current"] = 0
         return amount
 
-    @commands.Cog.listener()
+    @commands.Cog.listener("on_reaction_add")
     async def on_reaction_add(self, react, react_user):
         """Listener Function to handle Reactions"""
 
