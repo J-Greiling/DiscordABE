@@ -160,11 +160,37 @@ class Guild(commands.Cog):
         """Passes a month deducting money and processing goods
         For now just money deduction is implemented
         """
+        # Laboratory
+        addon_name = "laboratory"
+        res_value = [0, 13, 16, 19]
+        res = "glass"
+        await self.money_gen_production(ctx, addon_name, res_value, res)
+        #Smithy
+        addon_name = "smithy"
+        res_value = [0, 7, 10, 15]
+        res = "metal"
+        await self.money_gen_production(ctx, addon_name, res_value, res)
+        #Scriptorium
+        addon_name = "scriptorium"
+        res_value = [0, 7, 10, 15]
+        res = "wood"
+        await self.money_gen_production(ctx, addon_name, res_value, res)
+
+
         upkeep = 0
         for addon in self.guild.addons.index:
-            upkeep += self.guild.addons["current_level"][addon] * 20
+            upkeep += int(self.guild.addons["current_level"][addon]) * 20
         await ctx.send(f"Current Upkeep: {upkeep} Gold")
         await self.res_management.add_money(ctx, -upkeep)
+
+    async def money_gen_production(self,ctx, addon_name: str, res_value: [int], res: str):
+        """Handling of Product/Money generating buildings"""
+        if self.guild.addons["current_level"][addon_name] > 0:
+            amount = await self.res_management.edit_res_upkeep(res)
+            if amount:
+                generated_income = int(amount * res_value[self.guild.addons["current_level"][addon_name]])
+                await self.res_management.add_money(ctx, generated_income)
+                await ctx.send(f"{addon_name} used {amount} {res} to create products worth {generated_income} gold")
 
 
     @commands.Cog.listener()

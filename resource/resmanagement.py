@@ -54,7 +54,7 @@ class ResManagement(commands.Cog):
         try:
             amount = int(amount)
             value_new_res = self.resource["value"][res.lower()] * amount
-            if value_new_res < self.resource["current"]["gold"]:
+            if value_new_res <= self.resource["current"]["gold"]:
                 if amount > 0 or abs(amount) <= self.resource["current"][res.lower()]:
                     self.resource.at["gold", "current"] = self.resource["current"]["gold"] - value_new_res
                     await self.add_res(ctx, amount, res)
@@ -127,16 +127,42 @@ class ResManagement(commands.Cog):
             print(f"Invalid input in {self.add_res.name}: {e}")
             await ctx.send("Invalid Input")
 
-    async def buy_res_direct(self, ctx, res: str):
+    async def buy_res_direct(self, ctx, res: str, user):
         """Interactive Input based on reaction, asks user the amount of selected resource to be modified
 
         Parameters
         ----------
         res - resource to be added
         """
-        await ctx.send(f"How much {res} do you want to buy?")
-        msg = await self.bot.wait_for('message')
-        await self.buy_res(ctx, int(msg.content), res.lower())
+        await ctx.send(f"How much {res} do you want to buy? (negative number to sell)")
+
+        def check(m):
+            return m.author == user and m.channel == ctx.message.channel
+
+        msg = await self.bot.wait_for('message', check=check)
+        await self.buy_res(ctx, msg.content, res.lower())
+
+    async def edit_res_upkeep(self, res: str):
+        """Removes up to ten of a Resource to be converted to gold
+
+        Paramters
+        ---------
+           res - Name of resource to be taken from storage
+
+        Returns
+        -------
+           amount - amount of res for conversion
+        """
+        threshold = 10
+        if res == "wood":
+            threshold *= 2
+        if self.resource["current"][res] > threshold:
+            amount = threshold
+            self.resource.at[res, "current"] = self.resource["current"][res] - threshold
+        else:
+            amount = self.resource["current"][res]
+            self.resource.at[res, "current"] = 0
+        return amount
 
     @commands.Cog.listener()
     async def on_reaction_add(self, react, react_user):
@@ -148,7 +174,7 @@ class ResManagement(commands.Cog):
             if react.message.id == self.res_msg.id:
                 for res in self.resource.index:
                     if react.count > 1 and react.emoji == self.resource["emoji"][res]:
-                        await self.buy_res_direct(ctx, res)
+                        await self.buy_res_direct(ctx, res, react_user)
 
 
 def setup(bot):
