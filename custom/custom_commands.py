@@ -9,6 +9,11 @@ import discord
 from discord.ext import commands
 from . import dice
 
+# globals
+USER_ROLE = "Tyria"
+DM_ROLE = "Regular DM"
+BOT_ROLE = "A.B.E"
+
 
 class CustomCommands(commands.Cog):
     def __init__(self, bot):
@@ -42,6 +47,11 @@ class CustomCommands(commands.Cog):
         embed.set_footer(text="No takebacks for bad rolls")
 
         await ctx.send(embed=embed)
+
+    @commands.command(name="purge", hidden=True)
+    @commands.has_role(DM_ROLE)
+    async def purge(self, ctx, amount):
+        await ctx.message.channel.purge(limit=int(amount)+1)
 
 
 def setup(bot):
